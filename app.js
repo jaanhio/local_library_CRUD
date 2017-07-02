@@ -6,14 +6,17 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var expressValidator = require('express-validator');
 
+
 var index = require('./routes/index');
 var users = require('./routes/users');
 var catalog = require('./routes/catalog');
+var compression = require('compression');
+var helmet = require('helmet');
 
 var app = express();
 
 var mongoose = require('mongoose');
-var mongodb = 'mongodb://user:user@ds141082.mlab.com:41082/local_library';
+var mongodb = process.env.MONGODB_URI || 'mongodb://user1:user1@ds159328.mlab.com:59328/local_library_production_hio';
 mongoose.connect(mongodb);
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
@@ -30,6 +33,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(expressValidator()); //checks if forms are filled correctly
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(compression());
+app.use(helmet());
 
 app.use('/', index);
 app.use('/users', users);
